@@ -1,7 +1,7 @@
 // See LICENSE.txt for license details.
 package problems
 
-import chisel3.iotesters.PeekPokeTester
+import chisel3.iotesters.{ChiselFlatSpec, Driver, PeekPokeTester}
 
 class DynamicMemorySearchTests(c: DynamicMemorySearch) extends PeekPokeTester(c) {
   val list = Array.fill(c.n){ 0 }
@@ -39,5 +39,14 @@ class DynamicMemorySearchTests(c: DynamicMemorySearch) extends PeekPokeTester(c)
       assert(list(addr) == target, "LOOKING FOR " + target + " FOUND " + addr)
     else
       assert(addr==(list.length-1), "LOOKING FOR " + target + " FOUND " + addr)
+  }
+}
+
+class DynamicMemorySearchTester extends ChiselFlatSpec {
+  behavior of "DynamicMemorySearch"
+  backends foreach {backend =>
+    it should s"correctly count randomly generated numbers in $backend" in {
+      Driver(() => new DynamicMemorySearch(256, 8), backend)(c => new DynamicMemorySearchTests(c)) should be (true)
+    }
   }
 }

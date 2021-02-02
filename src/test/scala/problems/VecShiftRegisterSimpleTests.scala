@@ -1,7 +1,7 @@
 // See LICENSE.txt for license details.
 package problems
 
-import chisel3.iotesters.PeekPokeTester
+import chisel3.iotesters.{ChiselFlatSpec, Driver, PeekPokeTester}
 
 class VecShiftRegisterSimpleTests(c: VecShiftRegisterSimple) extends PeekPokeTester(c) {
   val reg = Array.fill(4){ 0 }
@@ -13,5 +13,14 @@ class VecShiftRegisterSimpleTests(c: VecShiftRegisterSimple) extends PeekPokeTes
       reg(i) = reg(i-1)
     reg(0) = in
     expect(c.io.out, reg(3))
+  }
+}
+
+class VecShiftRegisterSimpleTester extends ChiselFlatSpec {
+  behavior of "VecShiftRegisterSimple"
+  backends foreach {backend =>
+    it should s"correctly count randomly generated numbers in $backend" in {
+      Driver(() => new VecShiftRegisterSimple, backend)(c => new VecShiftRegisterSimpleTests(c)) should be (true)
+    }
   }
 }

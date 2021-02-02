@@ -1,7 +1,7 @@
 // See LICENSE.txt for license details.
 package problems
 
-import chisel3.iotesters.PeekPokeTester
+import chisel3.iotesters.{ChiselFlatSpec, Driver, PeekPokeTester}
 
 class MemoTests(c: Memo) extends PeekPokeTester(c) {
   def rd(addr: Int, data: Int) = {
@@ -20,4 +20,13 @@ class MemoTests(c: Memo) extends PeekPokeTester(c) {
   rd(0, 1)
   wr(9, 11)
   rd(9, 11)
+}
+
+class MemoTester extends ChiselFlatSpec {
+  behavior of "Memo"
+  backends foreach {backend =>
+    it should s"correctly count randomly generated numbers in $backend" in {
+      Driver(() => new Memo, backend)(c => new MemoTests(c)) should be (true)
+    }
+  }
 }

@@ -29,8 +29,10 @@ class DynamicMemorySearch(val n: Int, val w: Int) extends Module {
   })
   val index  = RegInit(0.U(log2Ceil(n).W))
   // Implement below ----------
-
-  val memVal = 0.U
+  val mem = Mem(n, UInt(w.W))
+  val memVal = mem(index)
+  
+  when (io.isWr) { mem(io.wrAddr) := io.data }
 
   // Implement above ----------
   val done   = !io.en && ((memVal === io.data) || (index === (n-1).asUInt))

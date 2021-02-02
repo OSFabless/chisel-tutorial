@@ -2,6 +2,7 @@
 package problems
 
 import chisel3._
+import chisel3.util.Cat
 
 // Problem:
 //
@@ -17,7 +18,10 @@ class LFSR16 extends Module {
 
   // Implement below ----------
 
-  io.out := 0.U
+  val res = RegInit(1.U(16.W))
+  when ( io.inc ) { res := Cat(res(0)^res(2)^res(3)^res(5), res(15,1)) }
+
+  io.out := res
 
   // Implement above ----------
 }

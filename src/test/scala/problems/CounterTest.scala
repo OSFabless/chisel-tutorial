@@ -1,7 +1,7 @@
 // See LICENSE.txt for license details.
 package problems
 
-import chisel3.iotesters.PeekPokeTester
+import chisel3.iotesters.{ChiselFlatSpec, Driver, PeekPokeTester}
 
 class CounterTest(c: Counter) extends PeekPokeTester(c) {
   val maxInt  = 16
@@ -26,5 +26,14 @@ class CounterTest(c: Counter) extends PeekPokeTester(c) {
     step(1)
     curCnt = if(inc) intWrapAround(curCnt + amt, 255) else curCnt
     expect(c.io.tot, curCnt)
+  }
+}
+
+class CounterTester extends ChiselFlatSpec {
+  behavior of "Counter"
+  backends foreach {backend =>
+    it should s"correctly count randomly generated numbers in $backend" in {
+      Driver(() => new Counter, backend)(c => new CounterTest(c)) should be (true)
+    }
   }
 }

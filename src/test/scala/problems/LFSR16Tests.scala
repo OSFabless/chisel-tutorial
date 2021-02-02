@@ -1,7 +1,7 @@
 // See LICENSE.txt for license details.
 package problems
 
-import chisel3.iotesters.PeekPokeTester
+import chisel3.iotesters.{ChiselFlatSpec, Driver, PeekPokeTester}
 
 class LFSR16Tests(c: LFSR16) extends PeekPokeTester(c) {
   var res = 1
@@ -14,5 +14,14 @@ class LFSR16Tests(c: LFSR16) extends PeekPokeTester(c) {
       res = (res >> 1) | (bit << 15)
     }
     expect(c.io.out, res)
+  }
+}
+
+class LFSR16Tester extends ChiselFlatSpec {
+  behavior of "LFSR16"
+  backends foreach {backend =>
+    it should s"correctly count randomly generated numbers in $backend" in {
+      Driver(() => new LFSR16, backend)(c => new LFSR16Tests(c)) should be (true)
+    }
   }
 }

@@ -2,7 +2,7 @@
 package problems
 
 import chisel3._
-import chisel3.iotesters.PeekPokeTester
+import chisel3.iotesters.{ChiselFlatSpec, Driver, PeekPokeTester}
 
 class SingleEvenFilterTests[T <: UInt](c: SingleEvenFilter[T]) extends PeekPokeTester(c) {
   val maxInt  = 1 << 16
@@ -14,5 +14,14 @@ class SingleEvenFilterTests[T <: UInt](c: SingleEvenFilter[T]) extends PeekPokeT
     step(1)
     expect(c.io.out.valid, if (isSingleEven) 1 else 0)
     expect(c.io.out.bits, in)
+  }
+}
+
+class SingleEvenFilterTester extends ChiselFlatSpec {
+  behavior of "SingleEvenFilter"
+  backends foreach {backend =>
+    it should s"correctly count randomly generated numbers in $backend" in {
+      Driver(() => new SingleEvenFilter(UInt(16.W)), backend)(c => new SingleEvenFilterTests(c)) should be (true)
+    }
   }
 }

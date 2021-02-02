@@ -3,6 +3,7 @@ package problems
 
 import chisel3._
 import chisel3.util._
+import chisel3.stage.ChiselStage
 
 // Problem:
 //
@@ -22,9 +23,21 @@ class VendingMachine extends Module {
   val state = RegInit(sIdle)
 
   // Implement below ----------
-
-  state := s5
-
+  when (state === sIdle) {
+    when (io.nickel) { state := s5  }
+    when (io.dime)   { state := s10 }
+  } .elsewhen (state === s5) {
+    when (io.nickel) { state := s10 }
+    when (io.dime)   { state := s15 }
+  } .elsewhen (state === s10) {
+    when (io.nickel) { state := s15 }
+    when (io.dime)   { state := sOk }
+  } .elsewhen (state === s15) {
+    when (io.nickel) { state := sOk }
+    when (io.dime)   { state := sOk }
+  } .elsewhen (state === sOk) {
+    state := sIdle
+  }
   // Implement above ----------
 
   io.valid := (state === sOk)

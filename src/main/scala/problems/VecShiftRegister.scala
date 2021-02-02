@@ -2,6 +2,7 @@
 package problems
 
 import chisel3._
+import chisel3.stage.ChiselStage
 
 // Problem:
 //
@@ -18,8 +19,13 @@ class VecShiftRegister extends Module {
     val out   = Output(UInt(4.W))
   })
   // Implement below ----------
-
-  io.out := 0.U
+  val res = Reg(io.ins.cloneType)
+  when (io.load) {
+    for (i <- 0 until io.ins.length) res(i) := io.ins(i)
+  } .elsewhen(io.shift) {
+    for (i <- 0 until io.ins.length) if (i == 0) res(i) := io.ins(i) else res(i) := res(i-1)
+  }
+  io.out := res(io.ins.length-1)
 
   // Implement above ----------
 }

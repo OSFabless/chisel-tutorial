@@ -1,7 +1,7 @@
 // See LICENSE.txt for license details.
 package problems
 
-import chisel3.iotesters.PeekPokeTester
+import chisel3.iotesters.{ChiselFlatSpec, Driver, PeekPokeTester}
 
 class Mux4Tests(c: Mux4) extends PeekPokeTester(c) {
   for (s0 <- 0 until 2) {
@@ -26,6 +26,15 @@ class Mux4Tests(c: Mux4) extends PeekPokeTester(c) {
           }
         }
       } 
+    }
+  }
+}
+
+class Mux4Tester extends ChiselFlatSpec {
+  behavior of "Mux4"
+  backends foreach {backend =>
+    it should s"correctly count randomly generated numbers in $backend" in {
+      Driver(() => new Mux4, backend)(c => new Mux4Tests(c)) should be (true)
     }
   }
 }

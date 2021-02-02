@@ -1,7 +1,7 @@
 // See LICENSE.txt for license details.
 package problems
 
-import chisel3.iotesters.PeekPokeTester
+import chisel3.iotesters.{ChiselFlatSpec, Driver, PeekPokeTester}
 
 class VendingMachineSwitchTests(c: VendingMachineSwitch) extends PeekPokeTester(c) {
   var money = 0
@@ -22,5 +22,14 @@ class VendingMachineSwitchTests(c: VendingMachineSwitch) extends PeekPokeTester(
 
     // Compare
     expect(c.io.valid, if (isValid) 1 else 0)
+  }
+}
+
+class VendingMachineSwitchTester extends ChiselFlatSpec {
+  behavior of "VendingMachineSwitch"
+  backends foreach {backend =>
+    it should s"correctly count randomly generated numbers in $backend" in {
+      Driver(() => new VendingMachineSwitch, backend)(c => new VendingMachineSwitchTests(c)) should be (true)
+    }
   }
 }

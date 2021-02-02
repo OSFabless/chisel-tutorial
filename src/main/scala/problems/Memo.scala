@@ -2,6 +2,7 @@
 package problems
 
 import chisel3._
+import chisel3.stage.ChiselStage
 
 // Problem:
 //
@@ -23,7 +24,9 @@ class Memo extends Module {
   val mem = Mem(256, UInt(8.W))
 
   // Implement below ----------
+  when (io.wen) { mem(io.wrAddr) := io.wrData }
 
+  when (io.ren) { io.rdData := mem(io.rdAddr) } otherwise { io.rdData := 0.U }
   // Implement above ----------
 
 }
